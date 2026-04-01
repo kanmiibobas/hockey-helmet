@@ -1,86 +1,88 @@
-## Freenove_ESP32_S3_WROOM_Board
+# HockeyHelmetCam
 
-A kit with a Freenove® ESP32-S3 Board for learning programming and electronics.
+ESP32-S3 hockey helmet camera firmware for the Freenove ESP32-S3 WROOM board.
 
-<img src='Board.jpg' width='70%'/>
+## Features
+- **Wi-Fi hotspot**: Creates "HelmetCam" network — no router needed on the rink
+- **Live stream**: MJPEG video at http://192.168.4.1 on your phone browser
+- **BLE control**: Send commands from any BLE terminal app (nRF Connect, etc.)
+- **SD recording**: Save JPEG frames to microSD at ~5 FPS
+- **Photo capture**: Via web UI, BLE command, or onboard boot button
+- **LED status**: WS2812 color-coded (green=ready, blue=streaming, purple=recording)
 
-ESP32-S3 chip is manufactured by Espressif®.
->Espressif® is a trademark of Espressif Systems (Shanghai) Co.Ltd (https://www.espressif.com/).
+## Setup
 
-Freenove ESP32-S3 Board can be uploaded code using Arduino® IDE.
-> Arduino® is a trademark of Arduino LLC (https://www.arduino.cc/).
+### Arduino IDE
+1. Install Arduino IDE 2.x
+2. Add ESP32 board URL in Preferences:
+   `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`
+3. Install "esp32 by Espressif Systems" from Boards Manager
+4. Install the Freenove WS2812 library:
+   Sketch → Include Library → Add .ZIP Library → select
+   `Freenove_ESP32_S3_WROOM_Board-main/C/Libraries/Freenove_WS2812_Lib_for_ESP32-2.0.0.zip`
 
-<img src='ESP32S3_Pinout.png' width='100%'/>
+### Board Settings
+- Board: ESP32S3 Dev Module
+- Port: (your USB serial port)
+- USB CDC On Boot: Disabled
+- CPU Frequency: 240MHz (WiFi)
+- Flash Mode: QIO 80MHz
+- Flash Size: 8MB (64Mb)
+- Partition Scheme: 8M with spiffs (3MB APP/1.5MB SPIFFS)
+- PSRAM: OPI PSRAM
+- Upload Mode: UART0 / Hardware CDC
+- Upload Speed: 921600
 
-### Download
+### Hardware
+- Plug OV2640 camera into FPC connector
+- Insert 32GB microSD card (FAT32)
+- Connect USB-C to UART port for programming
+- For battery: LiPo → LiPo Rider Plus → SPDT switch → board 5V + GND pins
 
-Click the green "Code" button, then click "Download ZIP" button in the pop-up window.  
-Do NOT click the "Open in Desktop" button, it will lead you to install Github software.
+## Usage
 
-> If you meet any difficulties, please contact our technical team for help.
+### Phone Browser (Wi-Fi)
+1. Connect phone to "HelmetCam" Wi-Fi (password: hockey123)
+2. Open http://192.168.4.1 in browser
+3. Use buttons to record, take photos, change resolution
 
-### Use
+### BLE Commands (send from nRF Connect app)
+| Command   | Action                         |
+|-----------|--------------------------------|
+| PHOTO     | Take and save a photo          |
+| RECORD    | Start recording to SD          |
+| STOP      | Stop recording                 |
+| STATUS    | Get camera/SD/recording status |
+| RES:VGA   | Set 640x480 resolution         |
+| RES:SVGA  | Set 800x600 resolution         |
+| RES:XGA   | Set 1024x768 resolution        |
+| RES:HD    | Set 1280x720 resolution        |
+| FLIP      | Toggle vertical flip           |
+| MIRROR    | Toggle horizontal mirror       |
 
-1. Download the ZIP file as above.
-2. Unzip it and you will get a folder contains tutorials and related files.
-3. Please start with "Start Here.pdf".
+### Boot Button (GPIO0)
+- **Short press**: Take a photo
+- **Long press (2+ seconds)**: Start/stop recording
 
-### Support
+## LED Colors
+| Color  | Meaning                    |
+|--------|----------------------------|
+| Yellow | Booting                    |
+| Green  | Ready / standby            |
+| Blue   | Wi-Fi streaming active     |
+| Purple | Recording to SD (blinks)   |
+| White  | Photo captured (flash)     |
+| Red    | Error (camera/SD failed)   |
 
-Freenove provides free and quick customer support. Including but not limited to:
+## SD Card Structure
+```
+/photos/IMG_0.jpg, IMG_1.jpg, ...
+/videos/REC_1/frame_0.jpg, frame_1.jpg, ...
+/videos/REC_2/frame_0.jpg, frame_1.jpg, ...
+```
 
-* Quality problems of products
-* Problems of products when used
-* Questions of learning and creation
-* Opinions and suggestions
-* Ideas and thoughts
-
-Please send an email to:
-
-[support@freenove.com](mailto:support@freenove.com)
-
-We will reply within one working day.
-
-### Purchase
-
-Please visit the following page to purchase our products:
-
-http://freenove.com/store
-
-Business customers please contact us through the following email address:
-
-[sale@freenove.com](mailto:sale@freenove.com)
-
-### About
-
-Freenove provides open source electronic products and services.
-
-Freenove is committed to helping customers learn programming and electronic knowledge, quickly implement product prototypes, realize their creativity and launch innovative products. Our services include:
-
-* Kits for learning programming and electronics
-* Kits compatible with Arduino®, Raspberry Pi®, micro:bit®, etc.
-* Kits for robots, smart cars, drones, etc.
-* Components, modules and tools
-* Design and customization
-
-To learn more about us or get our latest information, please visit our website:
-
-http://www.freenove.com
-
-### Copyright
-
-All the files in this repository are released under [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-nc-sa/3.0/).
-You can find a copy of the license in this repository.
-
-![markdown](https://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png)
-
-> It means you can use these files on your own derived works, in part or completely. But not for commercial use.
-
-Freenove® brand and logo are trademarks of Freenove Creative Technology Co., Ltd. Must not be used without permission.
-
-Other registered trademarks and their owners appearing in this repository:
-
-Arduino® is a trademark of Arduino LLC (https://www.arduino.cc/).  
-Raspberry Pi® is a trademark of Raspberry Pi Foundation (https://www.raspberrypi.org/).  
-micro:bit® is a trademark of Micro:bit Educational Foundation (https://www.microbit.org/).  
-Espressif® is a trademark of Espressif Systems (Shanghai) Co.Ltd (https://www.espressif.com/).
+## Customization
+- Change Wi-Fi name/password: edit `ap_ssid` and `ap_password` in the .ino
+- Change recording FPS: edit `RECORD_INTERVAL_MS` (200ms = ~5fps, 100ms = ~10fps)
+- Adjust image: edit the sensor settings in `initCamera()` (brightness, contrast, etc.)
+- Mount orientation: set `set_vflip` and `set_hmirror` in `initCamera()` based on how the camera sits on your helmet
