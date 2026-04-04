@@ -290,19 +290,21 @@ bool initCamera() {
   
   // Tune the image sensor
   sensor_t* s = esp_camera_sensor_get();
-  s->set_vflip(s, 0);         // 0 or 1 depending on how you mount it
-  s->set_hmirror(s, 0);       // 0 or 1 depending on mount orientation
-  s->set_brightness(s, 1);    // -2 to 2
-  s->set_saturation(s, 0);    // -2 to 2
-  s->set_contrast(s, 1);      // -2 to 2 (slight boost helps on ice)
-  s->set_whitebal(s, 1);      // auto white balance ON
-  s->set_awb_gain(s, 1);      // auto white balance gain ON
-  s->set_wb_mode(s, 0);       // 0=auto, 1=sunny, 2=cloudy, 3=office, 4=home
-  s->set_exposure_ctrl(s, 1); // auto exposure ON
-  s->set_aec2(s, 1);          // auto exposure DSP ON
-  s->set_gain_ctrl(s, 1);     // auto gain ON
-  s->set_agc_gain(s, 0);      // AGC gain 0-30
-  s->set_gainceiling(s, (gainceiling_t)6); // max gain ceiling
+  s->set_vflip(s, 0);
+  s->set_hmirror(s, 0);
+  s->set_brightness(s, 2);         // max brightness
+  s->set_saturation(s, 0);
+  s->set_contrast(s, 1);
+  s->set_whitebal(s, 1);
+  s->set_awb_gain(s, 1);
+  s->set_wb_mode(s, 0);           // auto white balance
+  s->set_exposure_ctrl(s, 1);     // auto exposure ON
+  s->set_aec2(s, 1);              // auto exposure DSP ON
+  s->set_ae_level(s, 2);          // exposure compensation +2 (brighter)
+  s->set_aec_value(s, 600);       // manual exposure base value (higher = brighter)
+  s->set_gain_ctrl(s, 1);         // auto gain ON
+  s->set_agc_gain(s, 15);         // starting gain boost (0-30)
+  s->set_gainceiling(s, (gainceiling_t)6);  // max gain ceiling (0-6, 6 = 128x)
   
   Serial.println("[Camera] Initialized OK");
   return true;
